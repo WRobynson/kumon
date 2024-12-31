@@ -1,0 +1,4 @@
+# min  hr dom mon dow command
+
+#   Limpeza dos arquivos de LOG do sistema
+59 15 * * * root /var/www/scripts/clear_log/clear_log.sh >> /var/www/scripts/_log/clear_log.out 2>&1
