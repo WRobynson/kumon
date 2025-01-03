@@ -1,23 +1,19 @@
 self.addEventListener('install', (event) => {
-    event.waitUntil(
+  console.log('Service Worker: Instalado.');
+  event.waitUntil(
       caches.open('meu-app-cache').then((cache) => {
-        return cache.addAll([
-          '/',
-          '/index.html',
-          '/styles.css',
-          '/script.js',
-          '/icons/icon-192x192.png',
-          '/icons/icon-512x512.png'
-        ]);
+          console.log('Service Worker: Cache criado.');
+          return cache.addAll([
+              '/',
+              '/config/script.js',
+              '/config/reset.css',
+              '/config/estilos.css',
+              '/logo/logo192.png',
+              '/logo/logo512.png',
+              '/logo/favicon.ico',
+          ]).catch((error) => {
+              console.error('Erro ao adicionar ao cache:', error);
+          });
       })
-    );
-  });
-  
-  self.addEventListener('fetch', (event) => {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request);
-      })
-    );
-  });
-  
+  );
+});

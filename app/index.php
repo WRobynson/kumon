@@ -50,11 +50,11 @@
 
 				if ($resp != "F5") {
 					if (is_numeric($resp)) {
-						$Msg = shAlert("<b>Parabéns!</b> Você concluiu {$qtde} novas folhas.", "success", true, "return", "mb-1");
+						$Msg = shAlert("<b>Parabéns!</b> Você concluiu {$qtde} novas folhas.", "success", true, "return", "mb-3");
 						_log("Adicionou novs folhas ({#$resp} em `t_desempenho`) [Dia = {$dia}; Folhas = {$qtde}]");
 					}
 					else {
-						$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, "return", "mb-1");
+						$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, "return", "mb-3");
 						_log_sql($resp[0], $resp[1], "Erro na tentativa de adicionar folhas concluídas.");
 					}
 				}
@@ -75,11 +75,11 @@
 
 				if ($resp != "F5") {
 					if (is_numeric($resp)) {
-						$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, "return", "mb-1");
+						$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, "return", "mb-3");
 						_log("atualizou a meta: [Dia = {$meta_dia}; Estágio: {$estagio}; Folhas = {$folha}]");
 					}
 					else {
-						$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, "return", "mb-1");
+						$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, "return", "mb-3");
 						_log_sql($resp[0], $resp[1], "Erro na tentativa de atualizar a meta.");
 					}
 				}
@@ -102,6 +102,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="blue">
+	<meta name="apple-touch-icon" content="logo/logo192.png">
 	<title>Desempenho no Kumon</title>
 	<script type="text/javascript" src="/lib/jquery/3.6.0/jquery.min.js"></script>
 	<script type="text/javascript" src="/lib/jquery/blockUI/2.7.0/jquery.blockUI.min.js"></script>
@@ -118,6 +120,7 @@
 	<link rel="stylesheet" type="text/css" href="/lib/glyphicons/glyphicons-filetypes.css">
 	<link rel="stylesheet" type="text/css" href="/lib/bootstrap/5.1.3/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.css">
+	<link rel="shortcut icon" type="image/x-icon" href="./logo/favicon.ico" />
 	
 	<link rel="stylesheet" type="text/css" href="config/estilos.css">
 
@@ -130,8 +133,16 @@
 
 $dow_arr = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
-//	pegue o último dia registrado
-$ult_dia = sqlResult("SELECT MAX(`dia`) `dia` FROM `t_desempenho`", "dia");
+//	pegue o último registro
+$result = getSelect("SELECT * FROM `t_desempenho` ORDER BY `dia` DESC LIMIT 1");
+
+$ult_dia = $result[0]["dia"];
+$folha_atual = $result[0]["folha"];
+$estagio_atual = $result[0]["estagio"];
+
+
+
+//$ult_dia = sqlResult("SELECT MAX(`dia`) `dia` FROM `t_desempenho`", "dia");
 //echo $ult_dia;
 
 if (! isValidDate($ult_dia, 'Y-m-d'))
@@ -139,7 +150,7 @@ if (! isValidDate($ult_dia, 'Y-m-d'))
 else
 	$px_dia = date('Y-m-d', strtotime($ult_dia . ' +1 day'));
 
-$dow_n = date('w',  strtotime($px_dia));
+$dow_n = date('w', strtotime($px_dia));
 
 $px_dia_sh = $dow_arr[$dow_n] . date(', d/m/Y', strtotime($px_dia));
 
@@ -154,7 +165,6 @@ $bgc = ($px_dia < $hoje ? "bg-warning" : "bg-success text-white");
  * Quando $_SESSION['csrf_token'] == $POST['csrf_token'], é pq a página foi recaregada (F5)
  */
 $csrf_token = bin2hex(random_bytes(32));
-$csrf_token2 = bin2hex(random_bytes(32));
 
 //	OPTIONS da quantidade de folhas feitas
 
@@ -188,6 +198,9 @@ echo "
 	</div>
 ";
 
+// Mensagem para o usuário
+echo $Msg;
+
 //	Formulário da META
 
 /**
@@ -209,11 +222,12 @@ else
 $meta_dia = date('d M. Y',strtotime($meta_dia));
 
 echo "
-	<div id='metaForm'>
+	<form>
 	<h4 class='text-center'>Meta</h4>
 		<p class='text-center'>No dia <b>{$meta_dia}</b>, eu quero <br>concluir a folha <b>{$meta_folha}</b> do estágio <b>{$estagio_arr[$meta_est]}</b>.</p>
+		<p class='text-center text-danger'>Hoje estou na folha <b>{$folha_atual}</b> do estágio <b>{$estagio_arr[$estagio_atual]}</b>.</p>
 		<div class='form-group'>
-			<button type='submit' class='btn btn-primary' onclick=\"window.location.href='/meta.php'\">Alterar</button>
+			<button type='button' class='btn btn-primary' onclick=\"window.location.href='/meta.php'\">Alterar</button>
 		</div>
 	</div>
 ";

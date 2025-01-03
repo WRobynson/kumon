@@ -30,6 +30,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#9BCCF0">
+	<meta name="apple-touch-icon" content="logo/logo192.png">
 	<title>Desempenho no Kumon</title>
 	<script type="text/javascript" src="/lib/jquery/3.6.0/jquery.min.js"></script>
 	<script type="text/javascript" src="/lib/jquery/blockUI/2.7.0/jquery.blockUI.min.js"></script>
@@ -45,6 +47,7 @@
 	<link rel="stylesheet" type="text/css" href="/lib/glyphicons/glyphicons-halflings.css">
 	<link rel="stylesheet" type="text/css" href="/lib/glyphicons/glyphicons-filetypes.css">
 	<link rel="stylesheet" type="text/css" href="/lib/bootstrap/5.1.3/bootstrap.min.css">
+	<link rel="shortcut icon" type="image/x-icon" href="./logo/favicon.ico" />
 	
 	<link rel="stylesheet" type="text/css" href="config/estilos.css">
 
