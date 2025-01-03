@@ -120,13 +120,13 @@ echo "
 				</div>
 			</div>
 			<div class='form-group row mb-2'>
-				<div class='form-group col-md-6'>
+				<div class='form-group'>
 					<label for='estagio' class='form-label'>Estágio</label>
 					<select id='estagio' name='estagio' class='form-select'>{$op_estagio}</select>
 				</div>
 			</div>
 			<div class='form-group row mb-2'>
-				<div class='form-group col-md-6'>
+				<div class='form-group'>
 					<label for='folha' class='form-label'>Folha</label>
 					<select id='folha' name='folha' class='form-select'>{$op_folha}</select>
 				</div>

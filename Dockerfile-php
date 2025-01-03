@@ -67,4 +67,3 @@ RUN openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
 	-out /var/www/key/kumon-certificate.crt \
 	-keyout /var/www/key/kumon.key \
 	-config /var/www/key/openssl.cnf
-	#-subj "/C=BR/ST=Brasilia/L=DF/O=XMATRIX/CN=localhost"

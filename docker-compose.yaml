@@ -32,8 +32,8 @@ services:
     user: ${UID}:${GID}
     restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
+      - 11180:80
+      - 11443:443
     environment:
       TZ: ${TZ}
       MYSQL_HOST: ${MYSQL_HOST}
@@ -52,6 +52,7 @@ services:
       - ./app:/var/www/html
       - ./lib:/var/www/html/lib
       - ./.git/refs/tags:/var/www/tags:ro
+      #- ./key/:/var/www/key
     depends_on:
       dbkumon:
         condition: service_healthy
@@ -73,7 +74,7 @@ services:
       UPLOAD_LIMIT: 100M
     restart: always
     ports:
-      - 8081:443
+      - 11181:443
     volumes:
       - ./infra/php/config.secret.inc.php:/etc/phpmyadmin/config.secret.inc.php:ro
       - ./infra/php/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:ro
