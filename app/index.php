@@ -232,7 +232,7 @@ echo "
 	</div>
 ";
 
-echo "<button type='submit' class='btn btn-success' onclick=\"window.location.href='/grafico.php'\">Gráfico</button>";
+echo "<button type='button' class='btn btn-success' onclick=\"window.location.href='/grafico.php'\">Gráfico</button>";
 
 /**
  *  v_desempenho = 
