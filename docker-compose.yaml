@@ -52,7 +52,7 @@ services:
       - ./app:/var/www/html
       - ./lib:/var/www/html/lib
       - ./.git/refs/tags:/var/www/tags:ro
-      #- ./key/:/var/www/key
+      - ./key/:/var/www/key
     depends_on:
       dbkumon:
         condition: service_healthy
