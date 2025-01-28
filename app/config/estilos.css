@@ -1,0 +1,128 @@
+/*
+	Estilo geral 
+	//////////////////////////////////////////////////////////////////////////////
+*/
+
+/* retirada das setas dos campos numéricos (input type number) */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+/**
+ * Fontes
+*/
+
+@font-face {
+    font-family: 'Kramer';
+    src: url('../fonts/Kramer.ttf') format('truetype');
+    font-weight: normal; /* Ajuste para bold se necessário */
+    font-style: normal;  /* Ajuste para italic se necessário */
+}
+
+.drop-cap {
+	font-family: 'Kramer';
+	font-size: large; /* Ajuste o tamanho */
+	color: #333; /* Cor do drop cap */
+	margin-left: 10px; /* Espaço entre o drop cap e o texto */
+	line-height: 1;
+}
+
+/*
+	página principal 
+	//////////////////////////////////////////////////////////////////////////////
+*/
+
+/* estrutura da página */
+
+html, body {
+    width: 100%;
+    height: 100%;
+	background: #9BCCF0;
+}
+
+main {
+	flex-grow: 1;
+}
+
+footer {
+	padding: 3px 3px;
+	text-align: right;
+}
+
+/* conteiner dos conteúdos das páginas */ 
+.geral {
+	padding:10px;
+}
+
+/* Título das páginas */
+#titulo {
+	margin-top: 15px;
+}
+
+/*
+	Formulário
+*/
+.form {
+	background: lightgray;
+    padding: 10px;
+	border-radius: 5px;
+	margin-bottom: 20px;
+}
+
+.form h4 {
+	border-bottom: 1px solid darkgray;
+    padding-bottom: 4px;
+}
+
+#logo_login {
+	height: 130px;
+    margin: 15px;
+}
+
+.emoji {
+	text-align: center;
+	padding: 10px
+}
+
+select:invalid, select:disabled, select option[value=""] {
+	color: gray;
+	font-style: italic;
+}
+
+/* opções com as disciplinas */
+.disc_op {
+	width: 180px;
+    font-size: x-large;
+    margin-bottom: 20px;
+}
+
+.disc_op > button {
+    margin: 10px;
+	width: 150px;
+	text-align: left;
+}
+
+/* Quando o dispositivo estiver em modo paisagem (horizontal) */
+@media (orientation: landscape) {
+	.hide-on-landscape {
+		display: none; /* Oculta o título e o botão */
+	}
+}
+
+/* .swiper {
+	width: 100%;
+	height: 100%;
+}
+
+.swiper-slide {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+} */
+
+
+
