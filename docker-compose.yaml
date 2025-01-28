@@ -1,0 +1,33 @@
+networks:
+  proxy-network:
+    external: true
+  db-network:
+    external: true
+services:
+  php-kumon:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: php-kumon
+    user: ${UID}:${GID}
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_ROOT: ${MYSQL_ROOT}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_KUMON}
+      MYSQL_USER: ${MYSQL_USER_KUMON}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD_KUMON}
+      ROOT_DIR: ${ROOT_DIR}
+      KUMON_DIR: ${KUMON_DIR}
+    volumes:
+      - ./infra/www/000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
+      - ./infra/php/php.ini:/usr/local/etc/php/conf.d/php.ini:ro
+      - ./infra/php/kumon.logrotate:/etc/logrotate.d/kumon
+      - ./app:/var/www/html
+      - ../../_lib:/var/www/html/lib
+      - ../../nginx/certs:/var/www/cert
+    networks:
+      - proxy-network
+      - db-network

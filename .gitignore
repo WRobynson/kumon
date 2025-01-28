@@ -1,0 +1,11 @@
+# bizu
+# https://www.pluralsight.com/guides/how-to-use-gitignore-file
+#
+
+*lixo*
+*delme*
+*~
+*.log
+*.erro
+teste.php
+teste/
