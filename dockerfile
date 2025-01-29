@@ -4,7 +4,7 @@ FROM php:8.2-apache
 ARG WEB_USER=kumon
 
 RUN apt-get update && \
-	apt-get install --no-install-recommends --assume-yes libicu-dev libldap2-dev libzip-dev libssl-dev libcurl4-openssl-dev && \
+	apt-get install --no-install-recommends --assume-yes libicu-dev libssl-dev libcurl4-openssl-dev && \
 	apt-get install -y sudo && \
 	apt-get clean && \
 	docker-php-ext-install ftp && \
@@ -12,12 +12,7 @@ RUN apt-get update && \
 	docker-php-ext-enable pdo pdo_mysql && \
 	docker-php-ext-install intl  && \
 	docker-php-ext-enable intl && \
-	docker-php-ext-install zip && \
-	docker-php-ext-enable zip && \
 	rm -rf /var/lib/apt/lists/* && \
-	docker-php-ext-configure ldap  && \
-	docker-php-ext-install ldap && \
-	docker-php-ext-enable ldap && \
 	a2enmod rewrite headers ssl socache_shmcb mime && \
 	ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && \
 	echo "America/Sao_Paulo" > /etc/timezone && \
@@ -25,11 +20,11 @@ RUN apt-get update && \
 	echo "ServerSignature Off" >> /etc/apache2/apache2.conf && \
 	echo "TraceEnable Off" >> /etc/apache2/apache2.conf && \
 	echo "Header always unset X-Powered-By" >> /etc/apache2/apache2.conf && \
-	echo "AddType video/mp4 .mp4" >> /etc/apache2/apache2.conf && \
-	echo "AddType video/webm .webm" >> /etc/apache2/apache2.conf && \
-	echo "AddType video/ogg .ogg" >> /etc/apache2/apache2.conf && \
-	echo "AddType video/x-msvideo .avi" >> /etc/apache2/apache2.conf && \
-	echo "AddType ideo/x-matroska .mkv" >> /etc/apache2/apache2.conf && \
+	# Instalar o Node.js
+	curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+	apt-get install -y nodejs && \
+	# Instalar o pacote web-push
+	npm install -g web-push && \
 	# Criação do usuário kumon (com senha aleatória)
 	WEB_USER_PWD=$(openssl rand -hex 16) && \
 	useradd -u 1000 ${WEB_USER} && \
