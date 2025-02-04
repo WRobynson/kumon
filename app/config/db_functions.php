@@ -52,7 +52,7 @@ function sqlInsert($dados_arr, $csrf_token = null)
 {
 	global $DB;
 
-	if ($_SESSION["csrf_token"] == $csrf_token)	//	este foi o último FORM executado
+	if (isset($_SESSION["csrf_token"]) && $_SESSION["csrf_token"] == $csrf_token)	//	este foi o último FORM executado
 		return "F5";
 	else {
 		/**

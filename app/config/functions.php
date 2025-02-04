@@ -160,7 +160,7 @@ function _log($msg, $tipo = 0)
 				2	=>	Log de acesso
 				3	=>	Log de alerta (segurança)
 				
-		Arquivos de LOG definidos em 'definicoes.php'
+		Arquivos de LOG definidos em 'constantes.php'
 	*/
 
 	switch (true) {

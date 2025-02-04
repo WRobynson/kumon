@@ -195,7 +195,7 @@ define("CIANO", "#00ffff");				//	outro...
 
 $URI = $_SERVER['REQUEST_URI'];
 
-if (strpos($URI, "definicoes.php") > 0) {
+if (strpos($URI, "constantes.php") > 0) {
 	$constants = get_defined_constants(true);
 
 	$userConstants = $constants['user'];

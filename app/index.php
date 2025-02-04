@@ -1,7 +1,7 @@
 <?php
 	include("session.php");						//	dados da sessão
 	include("header.php");						//	definiçÕes de cabeçalho PHP
-	include("definicoes.php");					//	variáveis de ambiente e informações sobre o servidor
+	include("constantes.php");					//	variáveis de ambiente e informações sobre o servidor
 	
 	/**
 	 * Funcões específicas para o sistema
@@ -14,8 +14,52 @@
 	 */
 	include("config/db_functions.php");
 
+	/**
+	 * Carrega as chaves VAPID usadas para o envio de notificações
+	 */
+	
+	if (! getenv("VAPID_PUBLIC_KEY") || ! getenv("VAPID_PRIVATE_KEY")) {
+		_log("Chaves VAPID não existem no ambiente!");
+		
+		// Caminho do arquivo de ambiente
+		$envFile = '/var/www/html/push/vapid_keys.env';
+		
+		if (file_exists($envFile)) {
+			_log("Arquivo com as chaves encontrado. [{$envFile}]");
+			$envVars = parse_ini_file($envFile);
+	
+			if (isset($envVars['VAPID_PUBLIC_KEY'], $envVars['VAPID_PRIVATE_KEY'])) {
+				// Definir as variáveis de ambiente globalmente
+				putenv("VAPID_PUBLIC_KEY={$envVars['VAPID_PUBLIC_KEY']}");
+				putenv("VAPID_PRIVATE_KEY={$envVars['VAPID_PRIVATE_KEY']}");
+	
+				$_ENV['VAPID_PUBLIC_KEY'] = $envVars['VAPID_PUBLIC_KEY'];
+				$_ENV['VAPID_PRIVATE_KEY'] = $envVars['VAPID_PRIVATE_KEY'];
+	
+				_log("Chaves VAPID carregadas com sucesso.");
+			} else {
+				_log("Chaves VAPID não carregadas! [valor null]");
+			}
+		} else {
+			_log("Arquivo com as chaves VAPID não encontrado! [{$envFile}]");
+		}
+	}
+
+	// Exemplo de uso
+	$publicKey = getenv("VAPID_PUBLIC_KEY") ?: $_ENV['VAPID_PUBLIC_KEY'] ?? null;
+	$privateKey = getenv("VAPID_PRIVATE_KEY") ?: $_ENV['VAPID_PRIVATE_KEY'] ?? null;
+
+	if (!$publicKey || !$privateKey) {
+		_log("Erro: Chaves VAPID ainda não foram carregadas!", 1);
+	}
+	// else {
+	// 	echo "publicKey = [{$publicKey}]<br>privateKey = [{$privateKey}]";
+	// }
+
+	
 	//print_r2($_SESSION);
 	//print_r2($_POST);
+	print_r2($_ENV);
 
 	// MENSAGEM PARA O USUARIO
 	$Msg = null;
@@ -81,7 +125,7 @@
 					$_SESSION["USU"]["EMAIL"] = $reg['email'];
 
 					//	registro o acesso
-					_log("Autenticado com sucesso! Login: [{$u}]. ID: [{$id}]. Base: [local]", 2);
+					_log("Autenticado com sucesso! Login: [{$u}]. ID: [{$reg['id']}]. Base: [local]", 2);
 
 					$_SESSION["LOGIN_LAST_ATTEMPT"] = null;
 					$_SESSION["LOGIN_ATTEMPT"] = 0;
@@ -106,6 +150,9 @@
 			
 			//	faz mais de uma disciplina e escolheu uma
 			case "DISCIPLINA" :	
+				$id = $_SESSION["USU"]["ID"];
+				$u = $_SESSION["USU"]["NOME"];
+				
 				//	Disciplina escolhida (ID)
 				$disc = filter_input(INPUT_POST, 'disciplina');	
 
@@ -293,6 +340,9 @@
 		$div_logado = null;
 	}
 	else {
+		//	Solicitação de Notificação PUSH
+		echo "<script src='push/notif-push.js'></script>";
+
 		$logado_id = $_SESSION["USU"]["ID"];
 		$logado_n = $_SESSION["USU"]["NOME"];
 		$disc_id = $_SESSION["DISCIPLINA"]["ID"];

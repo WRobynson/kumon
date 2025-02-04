@@ -1,7 +1,7 @@
 <?php
 	include("session.php");						//	dados da sessão
 	include("header.php");						//	definiçÕes de cabeçalho PHP
-	include("definicoes.php");					//	variáveis de ambiente e informações sobre o servidor
+	include("constantes.php");					//	variáveis de ambiente e informações sobre o servidor
 	
 	/**
 	 * Funcões específicas para o sistema
