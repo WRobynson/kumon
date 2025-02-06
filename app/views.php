@@ -98,4 +98,20 @@
  * 
  */
 
+
+/**
+ * 	v_devedores
+ * 	--
+ * 	Esta view lista os alunos que não lançaram o resultado na data corrente
+ * 	
+	CREATE OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_devedores` AS
+	SELECT
+	    `usuario_id`
+	FROM
+		`t_desempenho`
+	GROUP BY
+		`usuario_id`
+	HAVING
+		SUM(CASE WHEN DATE(`dia`) = CURDATE() THEN 1 ELSE 0 END) < COUNT(DISTINCT `disciplina_id`);
+ */
 ?>

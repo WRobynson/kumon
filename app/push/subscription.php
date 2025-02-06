@@ -1,10 +1,13 @@
 <?php
+
 $raiz = "../";
 
 include($raiz."session.php");						//	dados da sessão
 include($raiz."header.php");						//	definiçÕes de cabeçalho PHP
 include($raiz."constantes.php");					//	variáveis de ambiente e informações sobre o servidor
 include($raiz."config/functions.php");
+
+//print_r2($_SESSION);
 
 // Recebe os dados enviados via POST (a inscrição)
 $subscription = json_decode(file_get_contents('php://input'), true);
@@ -30,7 +33,7 @@ $auth = $subscription['keys']['auth'];
 
 //	 antes de gravar, verifico se já não exeiste esta inscrição
 
-$result = getSelect("SELECT `id` FROM `t_subscriptions` WHERE `usu_id` = $logado_id AND `endpoint` = '{$endpoint}' AND `p256dh` = '{$p256dh}' AND `auth` = '{$auth}'");
+$result = getSelect("SELECT `id` FROM `t_subscriptions` WHERE `usu_id` = {$logado_id} AND `endpoint` = '{$endpoint}' AND `p256dh` = '{$p256dh}' AND `auth` = '{$auth}'");
 
 if ($result !== false && count($result) == 0) {
 	//	grava

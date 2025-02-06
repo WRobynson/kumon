@@ -31,25 +31,28 @@ function urlBase64ToUint8Array(base64String) {
 	return outputArray;
 }
 
-// Solicita permissão para notificações
+let isSubscribed = false; // variável para controlar o status da inscrição
+
 $(document).ready(function() {
-	// Quando o usuário clicar na página, solicita a permissão para notificações
 	$(document).click(function() {
-		if ('Notification' in window && 'serviceWorker' in navigator) {
+		if ('Notification' in window && 'serviceWorker' in navigator && !isSubscribed) { // Verifica se a inscrição ainda não foi feita
 			Notification.requestPermission().then(function(permission) {
 				if (permission === 'granted') {
 					console.log('Permissão concedida para notificações');
 
-					// O restante do código de inscrição no PushManager
+					// Inscreve-se para as notificações push
 					navigator.serviceWorker.ready.then(function(registration) {
 						registration.pushManager.subscribe({
 							userVisibleOnly: true, // A notificação será visível ao usuário
 							applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
 						}).then(function(subscription) {
 							console.log('Push Subscription:', subscription);
+
+							// Marcar como inscrito para evitar novas inscrições
+							isSubscribed = true;
 							
 							// Enviar a inscrição ao servidor
-							fetch('/push/save-subscription.php', {
+							fetch('/push/subscription.php', {
 								method: 'POST',
 								body: JSON.stringify(subscription),
 								headers: {
@@ -59,7 +62,7 @@ $(document).ready(function() {
 								if (!response.ok) {
 									throw new Error('Falha ao salvar a inscrição');
 								}
-								console.log('Assinatura salva no servidor!');
+								console.log('Assinatura enviada ao servidor!');
 							}).catch(err => {
 								console.log('Erro ao salvar assinatura no servidor:', err);
 							});
@@ -69,7 +72,6 @@ $(document).ready(function() {
 					});
 				} else {
 					console.log('Permissão negada para notificações');
-					alert("Por favor, permita as notificações.");
 				}
 			}).catch(function(error) {
 				console.log('Erro ao solicitar permissão:', error);

@@ -163,27 +163,35 @@ function _log($msg, $tipo = 0)
 		Arquivos de LOG definidos em 'constantes.php'
 	*/
 
+	$file = LOG_FILE;
+
 	switch (true) {
 		case preg_match('/1|erro|error/i', $tipo):
-			$file = LOG_FILE_ERRO;
+			$tipo = "ERRO";
 			break;
 
 		case preg_match('/2|acesso|access/i', $tipo):
-			$file = LOG_FILE_ACESSO;
+			$tipo = "ACESSO";
 			break;
 
 		case preg_match('/3|alerta|alert/i', $tipo):
-			$file = LOG_FILE_ALERTA;
+			$tipo = "ALERTA";
+			break;
+
+		case preg_match('/4|aviso|warning/i', $tipo):
+			$tipo = "AVISO";
 			break;
 
 		default:
-			$file = LOG_FILE_ATIVIDADE;
+			$tipo = "ATIVIDADE";
 	}
 
 	$msg = preg_replace('~[[:cntrl:]]~', '', $msg); // remove all control chars (ex: \n \r)
 
-	$datetime = new DateTime("now", new \DateTimeZone("UTC"));	//	ZULU
-	$qdo = $datetime->format('Ymd_His.v\z');
+	//$datetime = new DateTime("now", new \DateTimeZone("UTC"));	//	ZULU
+	$datetime = new DateTime("now");								//	hora do servidor
+
+	$qdo = $datetime->format('Ymd_His');
 
 	if (isset($_SESSION['LOGADO_NOME']))
 		$u = $_SESSION['LOGADO_NOME'];
@@ -194,14 +202,13 @@ function _log($msg, $tipo = 0)
 
 	$browser = $_SERVER['HTTP_USER_AGENT'];
 
-	$quem = "{" . $u . " :: " . $ip . "}";
+	$quem = $u . "::" . $ip;
 	
 	//	se for log de acesso, registro o navegador
-	if ($file == LOG_FILE_ACESSO)
-		$quem = "{" . $u . " :: " . $ip . " :: " . $browser . "}";
+	if ($tipo == "ACESSO")
+		$quem .= "::" . $browser;
 	
-
-	$log = sprintf("%s => %s. %s%s", $qdo, $quem, $msg, PHP_EOL);
+	$log = sprintf("%s %% %s %% %s %% %s%s", $qdo, $tipo, $quem, $msg, PHP_EOL);
 
 	//	se o arquivo de LOG n existe, tento criar
 	if (is_writable(DIR_LOG) && !file_exists($file)) {

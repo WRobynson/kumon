@@ -15,51 +15,16 @@
 	include("config/db_functions.php");
 
 	/**
-	 * Carrega as chaves VAPID usadas para o envio de notificações
+	 * Verifica a existência das chaves VAPID (para o notificações)
 	 */
 	
-	if (! getenv("VAPID_PUBLIC_KEY") || ! getenv("VAPID_PRIVATE_KEY")) {
-		_log("Chaves VAPID não existem no ambiente!");
-		
-		// Caminho do arquivo de ambiente
-		$envFile = '/var/www/html/push/vapid_keys.env';
-		
-		if (file_exists($envFile)) {
-			_log("Arquivo com as chaves encontrado. [{$envFile}]");
-			$envVars = parse_ini_file($envFile);
-	
-			if (isset($envVars['VAPID_PUBLIC_KEY'], $envVars['VAPID_PRIVATE_KEY'])) {
-				// Definir as variáveis de ambiente globalmente
-				putenv("VAPID_PUBLIC_KEY={$envVars['VAPID_PUBLIC_KEY']}");
-				putenv("VAPID_PRIVATE_KEY={$envVars['VAPID_PRIVATE_KEY']}");
-	
-				$_ENV['VAPID_PUBLIC_KEY'] = $envVars['VAPID_PUBLIC_KEY'];
-				$_ENV['VAPID_PRIVATE_KEY'] = $envVars['VAPID_PRIVATE_KEY'];
-	
-				_log("Chaves VAPID carregadas com sucesso.");
-			} else {
-				_log("Chaves VAPID não carregadas! [valor null]");
-			}
-		} else {
-			_log("Arquivo com as chaves VAPID não encontrado! [{$envFile}]");
-		}
+	if (! isset($_ENV['VAPID_PUBLIC_KEY']) || ! isset($_ENV['VAPID_PRIVATE_KEY'])) {
+		_log("Erro: Chaves VAPID não carregadas!", 1);
 	}
-
-	// Exemplo de uso
-	$publicKey = getenv("VAPID_PUBLIC_KEY") ?: $_ENV['VAPID_PUBLIC_KEY'] ?? null;
-	$privateKey = getenv("VAPID_PRIVATE_KEY") ?: $_ENV['VAPID_PRIVATE_KEY'] ?? null;
-
-	if (!$publicKey || !$privateKey) {
-		_log("Erro: Chaves VAPID ainda não foram carregadas!", 1);
-	}
-	// else {
-	// 	echo "publicKey = [{$publicKey}]<br>privateKey = [{$privateKey}]";
-	// }
-
 	
 	//print_r2($_SESSION);
 	//print_r2($_POST);
-	print_r2($_ENV);
+	//print_r2($_ENV);
 
 	// MENSAGEM PARA O USUARIO
 	$Msg = null;

@@ -52,10 +52,7 @@ define("PATH_DO_SISTEMA", $path);									//	ex:	"/var/www"
 
 define("DIR_LOG", PATH_DO_SISTEMA."/log");							//	ex:	"/var/www/log"
 
-define("LOG_FILE_ATIVIDADE", DIR_LOG."/atividade.log");			//	DIR_LOG/atividade.log
-define("LOG_FILE_ACESSO", DIR_LOG."/acesso.log");				//	DIR_LOG/acesso.log
-define("LOG_FILE_ERRO", DIR_LOG."/erro.log");					//	DIR_LOG/erro.log
-define("LOG_FILE_ALERTA", DIR_LOG."/alerta.log");				//	DIR_LOG/alerta.log
+define("LOG_FILE", DIR_LOG."/log.txt");							//	DIR_LOG/log.txt
 
 /**
  * DIR_SCRIPT

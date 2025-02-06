@@ -1,8 +1,10 @@
 networks:
   proxy-network:
     external: true
+    driver: bridge
   db-network:
     external: true
+    driver: bridge
 services:
   kumon:
     build:
