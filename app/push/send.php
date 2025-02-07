@@ -4,9 +4,10 @@
  * A execução deste script deve ser agendada no CRON
  */
 
-$raiz = "../";
+echo "\n###\n" . "### " . date('d/m/Y H:m') . "\n###\n\n";
 
-include_once($raiz . "constantes.php");
+ $raiz = "../";
+
 include_once($raiz . "config/functions.php");
 include_once($raiz . "config/db_functions.php");
 
@@ -16,7 +17,7 @@ include_once($raiz . "config/db_functions.php");
 $devedores = getSelect("SELECT `usuario_id` FROM `v_devedores`");
 
 if (count($devedores) == 0) {
-	_log("NOTIF: Sem notificações para enviar. Todos em dia!");
+	echo "NOTIF: Sem notificações para enviar. Todos em dia!";
 	die();
 }
 
@@ -27,6 +28,7 @@ require_once($raiz . "vendor/autoload.php");
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
+echo "VAPID_PUBLIC_KEY: [{$_ENV['VAPID_PUBLIC_KEY']}]\nVAPID_PRIVATE_KEY: [{$_ENV['VAPID_PRIVATE_KEY']}]\n\n";
 
 $notify = [
 	'VAPID' => [
@@ -39,7 +41,7 @@ $notify = [
 //	Dados da notificação
 
 $title	= "Já fez seu KUMON hoje?";
-$icon   = URL . "img/kumon-piscando.png";
+$icon   = "img/kumon-piscando.png";
 $msg 	= "Não esqueça de registrar seu desempenho.";
 $url 	= "./";
 
@@ -80,22 +82,30 @@ foreach ($devedores as $devedor) {   //  para cada usuário
 		);
 
 		if ($report->isSuccess()) {
-			_log("Notificação enviada com sucesso! [Usuário: #{$usu_id}]");
-			echo "Notificação enviada com sucesso! [Usuário: #{$usu_id}]<br>endpoint=[{$endpoint}]<br>aut=[{$auth}]";
+			echo "# Notificação enviada com sucesso! \n[Usuário: #{$usu_id}]\nendpoint=[{$endpoint}]\nauth=[{$auth}]\n\n";
 		} else {
-			 // Obtenha o motivo do erro
-			 $errorReason = $report->getReason();
+			// Obtenha o motivo do erro
+			$errorReason = $report->getReason();
 
-			//  $statusCode = $report->response->getStatusCode();
+			if (stripos($errorReason, "410 Gone") !== false) {
+				/**
+				 * O erro 410 indica que a inscrição não é mais válida.
+				 * Portanto será excluída da base de dados.
+				 */
 
-			//  if ($report->getStatus() == 410) {
+				$sub_id = $linha["id"];
 
-			//  }
+				$stmt = $DB->prepare("DELETE FROM `t_subscriptions` WHERE `id` = :id");
+				$stmt->bindParam(':id', $sub_id, PDO::PARAM_INT);
 
-			_log("Erro ao enviar notificação: {$errorReason}", 1);
-			echo "Erro ao enviar notificação: {$errorReason}";
+				if ($stmt->execute()) {
+					echo "# Registro deletado com sucesso! [#{$usu_id}] `t_subscriptions`.\n";
+				} else {
+					echo "# Erro ao deletar o registro. [#{$usu_id}] `t_subscriptions`.\n";
+				}
+			}
 
-
+			echo "Erro ao enviar notificação!\nMotivo:[{$errorReason}]\n\n";
 		}
 
 	}

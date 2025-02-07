@@ -1,2 +1,4 @@
 # min  hr dom mon dow command
 
+#   Envia notificações PUSH
+11 06 * * * php /var/www/html/push/send.php >> /var/www/log/send.log 2>&1

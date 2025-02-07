@@ -145,7 +145,7 @@ define("SERVER_PROT", $protocol);								//	ex: http:// ou https://
  * Porta usada para acessar o sistema.
  * Configuraodo no servidor web (apache)
  */
-$port = $_SERVER["SERVER_PORT"] ? ":".$_SERVER["SERVER_PORT"] : "";
+$port = (isset($_SERVER["SERVER_PORT"]) ? ":".$_SERVER["SERVER_PORT"] : "");
 define("SERVER_PORT", $port);									//	Ex.: 80, 443,...
 
 
@@ -153,7 +153,7 @@ define("SERVER_PORT", $port);									//	Ex.: 80, 443,...
  * ENDEREÇO DO SERVIDOR 
  * IP ou HOSTNAME usado pelo usuário para acessar o sistema.
  */
-define("SERVER_END", $_SERVER["SERVER_NAME"]);					//	ex: 10.228.12.160 ou siop.cindacta1.intraer
+define("SERVER_END", $_SERVER["HTTP_HOST"]);					//	ex: 10.228.12.160 ou siop.cindacta1.intraer
 
 
 /**
