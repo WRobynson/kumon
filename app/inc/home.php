@@ -161,16 +161,20 @@ if (! empty($meta)) {
 	$meta_est = $meta[0]["estagio"];
 	$meta_folha = $meta[0]["folha"];
 	$meta_valor = $meta[0]["valor"];
+
+	$meta_msg = "No dia [<b>{$meta_dia}</b>], eu quero <br>concluir a folha [<b>{$meta_folha}</b>] do estágio [<b>{$estagio_arr[$meta_est]}</b>].";
 }
-else
+else {
 	$meta_dia = $meta_ts = $meta_est =  $meta_folha =  $meta_valor = $serie_meta = null;
+	$meta_msg = "Ainda não há meta dafinida.";
+}
 
 $meta_dia = date('d M. Y',strtotime($meta_dia));
 
 echo "
 	<form class='form' method='POST' action=''>
 	<h4 class='text-center'>Meta</h4>
-		<p class='text-center'>No dia [<b>{$meta_dia}</b>], eu quero <br>concluir a folha [<b>{$meta_folha}</b>] do estágio [<b>{$estagio_arr[$meta_est]}</b>].</p>
+		<p class='text-center'>{$meta_msg}</p>
 		<div class='text-center'>
 			<button class='btn btn-success' name='page' value='meta'><i class='fa-solid fa-pen-to-square'></i> &nbsp;Alterar</button>
 		</div>

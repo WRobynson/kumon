@@ -6,6 +6,7 @@
 *delme*
 *~
 *.log
+log/
 *.erro
 teste.php
 teste/
