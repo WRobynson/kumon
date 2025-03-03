@@ -98,7 +98,9 @@ $op_folhas = "
 	<option value='3'>3</option>
 	<option value='4'>4</option>
 	<option value='5'>5</option>
-	<option value='10'>10</option>";
+	<option value='10'>10</option>
+	<option value='15'>15</option>
+	<option value='20'>20</option>";
 
 if ($px_dia > $hoje) {
 	$msg = shAlert("Você está em dia com o Kumon.", "primary", false, "return", "mt-2 mb-1");
