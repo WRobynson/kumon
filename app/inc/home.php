@@ -166,7 +166,7 @@ if (! empty($meta)) {
 }
 else {
 	$meta_dia = $meta_ts = $meta_est =  $meta_folha =  $meta_valor = $serie_meta = null;
-	$meta_msg = "Ainda não há meta dafinida.";
+	$meta_msg = "Ainda não há meta definida.";
 }
 
 $meta_dia = date('d M. Y',strtotime($meta_dia));
