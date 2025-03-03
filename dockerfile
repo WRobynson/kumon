@@ -32,7 +32,8 @@ RUN	WEB_USER_PWD=$(openssl rand -hex 16) && \
 	useradd -u 1000 ${WEB_USER} && \
 	echo "${WEB_USER}:${WEB_USER_PWD}" | chpasswd && \
 	echo ${WEB_USER_PWD} >> /etc/web_user_pwd && \
-	echo "${WEB_USER} ALL=(ALL) /bin/chown, /bin/chmod, /usr/sbin/cron" >> /etc/sudoers && \
+	#echo "${WEB_USER} ALL=(ALL) /bin/chown, /bin/chmod, /usr/sbin/cron" >> /etc/sudoers && \
+	echo "${WEB_USER} ALL=(ALL)" >> /etc/sudoers && \
 	# criação da pasta para as chaves de criptografia
 	mkdir -p /var/www/cert && \
 	chown -R ${WEB_USER}:${WEB_USER} /var/www/cert && \
@@ -53,6 +54,13 @@ WORKDIR /var/www/html
 COPY composer.json /var/www/html/
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader && \
     composer require minishlink/web-push
+
+# script de inicialização (executado após UP do contêiner)
+COPY ./infra/php/entrypoint.sh /usr/local/bin/
+RUN tr -d '\r' < /usr/local/bin/entrypoint.sh > /tmp/entrypoint.sh && \
+    mv /tmp/entrypoint.sh /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 # Inicia o servidor Apache
 CMD service cron start && apache2-foreground

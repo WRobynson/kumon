@@ -16,10 +16,16 @@ if (!isset($_SESSION["DISCIPLINA"])) {
 //	pegue o último registro
 $result = getSelect("SELECT * FROM `t_desempenho` WHERE {$this_user_t} ORDER BY `dia` DESC LIMIT 1");
 
-$ult_dia = $result[0]["dia"];
-$folha_atual = $result[0]["folha"];
-$estagio_atual = $result[0]["estagio"];
+if (count($result) == 0) {
+	$pos_atual_msg = "Aluno não iniciado nesta disciplina.";
+}
+else {
+	$ult_dia = $result[0]["dia"];
+	$folha_atual = $result[0]["folha"];
+	$estagio_atual = $result[0]["estagio"];
 
+	$pos_atual_msg = "Hoje estou na folha <b>{$folha_atual}</b> do estágio <b>{$estagio_arr[$estagio_atual]}</b>.";
+}
 
 //$ult_dia = sqlResult("SELECT MAX(`dia`) `dia` FROM `t_desempenho`", "dia");
 //echo $ult_dia;
@@ -29,7 +35,7 @@ $estagio_atual = $result[0]["estagio"];
 echo "
 	<form class='form'>
 	<h4 class='text-center'>Posição atual</h4>
-		<p class='text-center'>Hoje estou na folha <b>{$folha_atual}</b> do estágio <b>{$estagio_arr[$estagio_atual]}</b>.</p>
+		<p class='text-center'>{$pos_atual_msg}</p>
 	</form>
 ";
 

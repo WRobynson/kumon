@@ -248,14 +248,29 @@
 		}
 	}
 
-	$estagio_arr = [
-		null, "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", 
-		"F1", "F2", "G1", "G2", "H1", "H2", "I1", "I2", "J1", "J2", "K1", 
-		"K2", "L1", "L2", "M1", "M2", "N1", "N2", "O1", "O2", "P1", "P2", 
-		"Q1", "Q2", "R1", "R2", "S1", "S2", "T1", "T2", "U1", "U2", "V1", 
-		"V2", "W1", "W2", "X1", "X2"
-	];
+	//	Definição dos estágios
 
+	if (isset($_SESSION["DISCIPLINA"])) {
+		
+		$sql = "SELECT `cod` FROM `t_estagios` WHERE `disciplina_id` = {$_SESSION["DISCIPLINA"]["ID"]} ORDER BY `pos`";
+		$estagios = getSelect($sql);
+
+		$i = 1;
+		foreach ($estagios as $estagio) {
+			$disciplina_id = $estagio['disciplina_id']; // Obter o ID da disciplina
+			$cod = $estagio['cod']; // Obter o código
+		
+			$estagio_arr[$i] = $cod;
+
+			$i++;
+		}
+
+		//print_r2($estagio_arr);
+
+	}
+	else {
+		$estagio_arr = null;
+	}
 ?>
 
 <!DOCTYPE html>

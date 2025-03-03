@@ -2,7 +2,7 @@
 set -e
 
 # Inicia o cron em segundo plano
-#cat /etc/web_user_pwd | sudo -S cron -f &
+cat /etc/web_user_pwd | sudo -S cron -f &
 
 #   muda as permissões da pasta do usuário (web) do sistema
 #cat /etc/web_user_pwd | sudo -S chown -R 1000:1000 /var/www/html/user
