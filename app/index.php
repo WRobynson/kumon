@@ -149,7 +149,7 @@
 					$qtde = filter_input(INPUT_POST, "qtde");
 
 					//	obter o estágio e a última folha lançados
-					$result = getSelect("SELECT `folha`, `estagio` FROM `t_desempenho` WHERE `usuario_id`={$logado_id} ORDER BY `dia` DESC LIMIT 1");
+					$result = getSelect("SELECT `folha`, `estagio` FROM `t_desempenho` WHERE `usuario_id`={$logado_id} AND `disciplina_id` = {$disc_id} ORDER BY `dia` DESC LIMIT 1");
 
 					$ult_est = $result[0]["estagio"];
 					$ult_folha = $result[0]["folha"];
