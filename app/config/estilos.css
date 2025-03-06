@@ -100,7 +100,6 @@ select:invalid, select:disabled, select option[value=""] {
 }
 
 .disc_op > button {
-    margin: 10px;
 	width: 150px;
 	text-align: left;
 }

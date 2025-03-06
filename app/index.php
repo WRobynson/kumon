@@ -67,14 +67,14 @@
 						/* AUTENTICOU LOCALMENTE!!! */
 					}
 					else {
-						$Msg = shAlert("Senha incorreta!", "danger", false, "return", "mb-3");
+						$Msg = shAlert("Senha incorreta!", "danger", false, true, "mb-3");
 						$FailAuth = true;
 						/* NÃO AUTENTICOU, SENHA INVÁLIDA */
 					}
 				}
 				else {
 					//	usuário NÃO existe na base local
-					$Msg = shAlert("Usuário não cadastrado!", "danger", false, "return", "mb-3");
+					$Msg = shAlert("Usuário não cadastrado!", "danger", false, true, "mb-3");
 				}
 
 				// se autenticou - registra USUARIO e ID
@@ -197,11 +197,11 @@
 									<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Fechar'></button>
 									</div>";
 
-							//$Msg = shAlert($txt, $cor, true, "return", "mb-3");
+							//$Msg = shAlert($txt, $cor, true, true, "mb-3");
 							_log("Adicionou novas folhas ({#$resp} em `t_desempenho`) [Dia = {$dia}; Folhas = {$qtde}]");
 						}
 						else {
-							$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, "return", "mb-3");
+							$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, true, "mb-3");
 							_log_sql($resp[0], $resp[1], "Erro na tentativa de adicionar folhas concluídas.");
 						}
 					}
@@ -215,10 +215,11 @@
 				$folha = filter_input(INPUT_POST, "folha");
 
 				//	obtenha o ID de quem está logado
-				$logado_id = $_SESSION["USU"]["ID"];
+				$usu_id = $_SESSION["USU"]["ID"];
 
 				//	qual a disciplina?
 				$disc_id = $_SESSION["DISCIPLINA"]["ID"];
+				$disc_n = $_SESSION["DISCIPLINA"]["NOME"];
 				
 				$valor = $estagio * 200 + $folha;
 
@@ -226,24 +227,161 @@
 				 * Obtenção do registro em t_meta
 				 */
 
-				//echo "logado_id = " . $logado_id;
-				$id_reg = sqlResult("SELECT `id` FROM `t_meta` WHERE `usuario_id`={$logado_id} AND `disciplina_id`={$disc_id}", "id");
+				//echo "usu_id = " . $usu_id;
+				
+				//	obtenha o ID do registro que define a meta em `t_meta`
+				$id_reg = sqlResult("SELECT `id` FROM `t_meta` WHERE `usuario_id`={$usu_id} AND `disciplina_id`={$disc_id}", "id");
 
-				$dados_arr = ["t_meta", $id_reg, ["dia" => $meta_dia, "estagio" => $estagio, "folha" => $folha]];
+				//	se não há meta definida... criamos
+				if ($id_reg == null) {
+					$dados_arr = ["t_meta", ["usuario_id" => $usu_id, "disciplina_id" => $disc_id, "dia" => $meta_dia, "estagio" => $estagio, "folha" => $folha]];
 
-				$resp = sqlUpdate($dados_arr, $csrf_token);
+					$resp = sqlInsert($dados_arr, $csrf_token);
 
-				if ($resp != "F5") {
-					if (is_numeric($resp)) {
-						$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, "return", "mb-3");
-						_log("atualizou a meta: [Dia = {$meta_dia}; Estágio: {$estagio}; Folhas = {$folha}]");
+					if ($resp != "F5") {
+						if (is_numeric($resp)) {
+							$Msg = shAlert("<b>Sucesso!</b> Sua meta foi definida!.", "success", true, true, "mb-3");
+							_log("definiu a meta para [{$disc_n}]: [Dia = {$meta_dia}; Estágio: {$estagio}; Folhas = {$folha}]");
+						}
+						else {
+							$Msg = shAlert("<b>ERRO</b>. Não foi possível definir a meta.", "danger", false, true, "mb-3");
+							_log_sql($resp[0], $resp[1], "Erro na tentativa de definir a meta.");
+						}
 					}
-					else {
-						$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, "return", "mb-3");
-						_log_sql($resp[0], $resp[1], "Erro na tentativa de atualizar a meta.");
-						echo $resp[0] . $resp[1];
+
+				}
+				else {	//	alteramos
+					$dados_arr = ["t_meta", $id_reg, ["dia" => $meta_dia, "estagio" => $estagio, "folha" => $folha]];
+
+					$resp = sqlUpdate($dados_arr, $csrf_token);
+
+					if ($resp != "F5") {
+						if (is_numeric($resp)) {
+							$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, true, "mb-3");
+							_log("atualizou a meta: [Dia = {$meta_dia}; Estágio: {$estagio}; Folhas = {$folha}]");
+						}
+						else {
+							$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, true, "mb-3");
+							_log_sql($resp[0], $resp[1], "Erro na tentativa de atualizar a meta.");
+							echo $resp[0] . $resp[1];
+						}
 					}
 				}
+			break;
+
+			//	adicionar nova disciplina
+			case "ADD_DISC" :
+				$disc_id = filter_input(INPUT_POST, "disc");
+				$disc_n = filter_input(INPUT_POST, "disc_n");
+				$dia = filter_input(INPUT_POST, "dia");
+				$estagio_nr = filter_input(INPUT_POST, "est");			//	número do estágio (posição)
+				$estagio_n = filter_input(INPUT_POST, "est_n");			//	o nome (A, B...)
+
+				$usu_id = $_SESSION["USU"]["ID"];
+
+				//	a disciplina tem o estágio selecionado?
+				$sql = "SELECT `pos` FROM `t_estagios` WHERE `disciplina_id` =  {$disc_id} AND `cod` = '{$estagio_n}'";
+				//echo $sql;
+				$estagio = sqlResult($sql, "pos");
+
+				if (empty($estagio) || $estagio = "SQL_ERROR") {
+					$Msg = shAlert("Estágio inválido [<b>{$estagio_n}</b>] para a disciplina [<b>{$disc_n}</b>] escolhida!", "danger", true, true, "mb-2");
+					$page = "login_disciplina";
+				}
+				else {
+					//	confirma se o aluno já não faz esta disciplina
+					$sql = "SELECT `id` FROM `t_usu_vs_disciplina` WHERE `usuario_id` = {$usu_id}";
+					$result = sqlResult($sql, "id");
+
+					if (! empty($result)) {
+						$Msg = shAlert("Você já está cadastrado na disciplina [<b>{$disc_n}</b>] escolhida!", "warning", true, true, "mb-2");
+						$page = "login_disciplina";
+					}
+					else {
+						$csrf_token = filter_input(INPUT_POST, "csrf_token");
+
+						//	insere o aluno na disciplina
+						$dados_arr = ["t_usu_vs_disciplina",
+										 ["usuario_id" => $usu_id, "disciplina_id" => $disc_id]
+									];
+
+						$resp = sqlInsert($dados_arr, $csrf_token);
+
+						if ($resp != "F5") {
+							if (is_numeric($resp)) {
+								_log("Adicionou a disciplina [$disc_n].");
+								$deu_certo = true;
+
+								//	adiciona o registro inicial na tabela de desempenho
+
+								/**
+								 * Obter o estágio inicial
+								 * Em t_desempenho o estágio é um número que corresponde à posição do estágio (label) na disciplina
+								 * Ou seja, a sequência dos estágios muda com a disciplina
+								 */
+
+								$sql = "SELECT `pos` FROM `t_estagios` WHERE `disciplina_id` = {$disc_id} AND `cod` = '{$estagio_n}'";
+								$est_n = sqlResult($sql, "pos");
+ 
+								if (! is_int($est_n)) {		//	algo deu errado
+									_log("Erro na obtenção do código do estágio. [{$sql}]", 1);
+									$Msg = shAlert("Não foi possível adcionar a disciplina.", "danger", true, true, "mb-2");
+
+									$deu_certo = false; 
+									$page = "login_disciplina";
+								}
+								else {
+									//	$est_n é o estágio inicial
+
+									//	dia anterior
+									$dia_anterior = date('Y-m-d', strtotime($dia . ' -1 day'));
+ 
+									$dados_arr = ["t_desempenho",
+											 ["usuario_id" => $usu_id, "disciplina_id" => $disc_id, "dia" => $dia_anterior, "qtde" => 0, "folha" => 0, "estagio" => $est_n]
+										 ];
+									
+									$resp2 = sqlInsert($dados_arr);
+
+									if (is_numeric($resp2)) {
+										_log("Registro inicial adicionado em `t_desempenho` para disciplina [{$disc_n}].");
+
+										//	aponta para a nova disciplina
+										$disc_arr = getSelect("SELECT * FROM `v_usu_vs_disciplina` WHERE `usu_id`={$usu_id} AND `disc_id` = {$disc_id} LIMIT 1");
+
+										$_SESSION["DISCIPLINA"]["ID"] = $disc_arr[0]["disc_id"];;
+										$_SESSION["DISCIPLINA"]["N"] = $disc_arr[0]["disc_n"];
+										$_SESSION["DISCIPLINA"]["L"] = $disc_arr[0]["disc_l"];
+										$_SESSION["DISCIPLINA"]["A"] = $disc_arr[0]["disc_a"];
+										$_SESSION["DISCIPLINA"]["D"] = $disc_arr[0]["disc_d"];
+									}
+									else {
+										_log("Erro ao adicionar registro inicial em `t_desempenho` para disciplina [{$disc_n}].", 1);
+										$deu_certo = false;
+
+										$Msg = shAlert("Não foi possível adcionar a disciplina.", "danger", true, true, "mb-2");
+										$page = "login_disciplina";
+									}
+
+								}
+
+								if ($deu_certo === false) {
+									/**
+									 * Se algo deu errado ao tentar adicionar o registro inicial em `t_desempenho`,
+									 * é preciso apagar o registro de add da disciplina
+									 */
+									$sql = "DELETE FROM `t_usu_vs_disciplina` WHERE `id` = {$resp}";
+									$DB->exec($sql);
+								}
+ 							}
+							else {
+								$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar a disciplina.", "danger", false, true, "mb-1");
+								_log_sql($resp[0], $resp[1], "Erro na tentativa de adicionar disciplina.");
+								$deu_certo = false;
+							}
+						}
+					}
+				}
+
 			break;
 		}
 	}
@@ -329,29 +467,34 @@
 		$disc_n = $_SESSION["DISCIPLINA"]["N"];		//	nome da disciplina
 		$disc_l = $_SESSION["DISCIPLINA"]["L"];		//	legenda da disciplina
 
-		$letra = "<span class='drop-cap' data-bs-toggle='tooltip' title='{$disc_n}'>{$disc_l}</span>";
+		$onClick = "onClick=\"$('#chDisc').val('YES'); $('#clicou').val(''); $('#f_identificacao').submit();\"";
+		$letra = "<span class='drop-cap' data-bs-toggle='tooltip' title='{$disc_n}' {$onClick}>{$disc_l}</span>";
 
 		//	usado nas cláusulas WHERE SQL
 		$this_user_t = "`usuario_id`={$logado_id} AND `disciplina_id`={$disc_id}";		// para tabelas
 		$this_user_v = "`usu_id`={$logado_id} AND `disc_id`={$disc_id}";			//	para views
 
 		$div_logado = "<div id='identificacao'>
-						<form class='form' style='background: bisque' method='POST' action=''>
+						<form id='f_identificacao' class='form' style='background: bisque' method='POST' action=''>
 							<h6 class='mb-0' style='display: inline-block;'>{$logado_n} {$letra}</h6>
-							<input type='hidden' name='CLICOU' value='SAIR'>
+							<input type='hidden' id='clicou' name='CLICOU' value='SAIR'>
 							<button class='btn btn-sm btn-success float-end' style='margin-top: -3px;'><i class='fa-solid fa-right-from-bracket'></i></button>
+							<input type='hidden' id='chDisc' name='chDisc' value=''></form>
 						</div></form>";
 		
 		//	página a ser carregada
-		if (! isset($_POST["page"])) {
-			$page = "home";
-		}
-		else {
-			$page = $_POST["page"];
+		if (empty($page)) {
+			if (! isset($_POST["page"])) {
+				$page = "home";
+			}
+			else {
+				$page = $_POST["page"];
+			}
 		}
 	}
 
 	echo $div_logado;
+	//echo "page = [{$page}]<br>";
 
 	//$page = "home";
 	include("inc/{$page}.php");

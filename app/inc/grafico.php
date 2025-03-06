@@ -107,13 +107,20 @@ foreach ($result as $linha) {
 
 //	obtenção dos dados para o gráfico de desempenho
 
+//	o primeiro registro (que pode ser qualquer dia, inclusive primeiro)
+$sql = "(SELECT `dia`, `ts`, `valor`, DATEDIFF('{$meta_dia}' , `dia`) AS dias_ate_meta FROM `v_desempenho` WHERE {$this_user_v} ORDER BY `dia` ASC LIMIT 1)";
+
+$sql .= " UNION ";
+
 //	apenas o primeiro dia de cada mês
-$sql = "(SELECT `dia`, `ts`, `valor`, DATEDIFF('{$meta_dia}' , `dia`) AS dias_ate_meta FROM `v_desempenho` WHERE DATE_FORMAT(`dia`, '%d') = '01' AND {$this_user_v})";
+$sql .= "(SELECT `dia`, `ts`, `valor`, DATEDIFF('{$meta_dia}' , `dia`) AS dias_ate_meta FROM `v_desempenho` WHERE DATE_FORMAT(`dia`, '%d') = '01' AND {$this_user_v})"; 
 
-$sql .= "UNION";
+$sql .= " UNION ";
 
-//	o último registro (que pode ser qualquer dia)
+//	o último registro (que pode ser qualquer dia, inclusive primeiro)
 $sql .= "(SELECT `dia`, `ts`, `valor`, DATEDIFF('{$meta_dia}' , `dia`) AS dias_ate_meta FROM `v_desempenho` WHERE {$this_user_v} ORDER BY `dia` DESC LIMIT 1)";
+
+//echo $sql;
 
 $result = getSelect($sql);
 
@@ -123,7 +130,7 @@ foreach ($result as $linha) {
 	$ts = $linha["ts"];         //  TimeStamp do dia
 
 	/**
-	 * o último registro pode coincidir com um dia PRIMEIRO
+	 * o primeiro e o último registros podem coincidir com um dia PRIMEIRO
 	 * o IF abaixo evita duplicação
 	 */
 	if ($ts != $ts_anterior) {
@@ -132,7 +139,7 @@ foreach ($result as $linha) {
 	
 		$dados_desempenho .= "[$ts, $valor],";
 
-		//	para o g´rafico da média
+		//	para o gráfico da média
 		$dias_ate_meta = $linha["dias_ate_meta"];
 
 		//	qtse de folhas até a meta
@@ -236,15 +243,14 @@ echo "<div class='text-center'><form method='POST' action=''>{$bot_home} &ensp; 
 ?>
 
 <script language='javascript'>
+/**
+ * $estagio_arr contém os nomes dos estágios de acordo com a disciplina selecionada
+ * Está definida em 'index.php'
+ * 
+ * No JS, vira 'const estagios'
+ */
 
-const estagios = [
-	"A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", 
-	"F1", "F2", "G1", "G2", "H1", "H2", "I1", "I2", "J1", "J2",
-	"K1", "K2", "L1", "L2", "M1", "M2", "N1", "N2", "O1", "O2", 
-	"P1", "P2", "Q1", "Q2", "R1", "R2", "S1", "S2", "T1", "T2",
-	"U1", "U2", "V1", "V2", "W1", "W2", "X1", "X2", "Y1", "Y2", 
-	"Z1", "Z2"
-];
+<?php echo "const estagios = " . json_encode(array_values($estagio_arr)) . ";"; ?>
 
 function calcularEstagio(folhas) {
 	const folhasPorEstagio = 200; // Cada estágio tem 200 folhas

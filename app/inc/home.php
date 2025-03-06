@@ -4,7 +4,7 @@
  * verifique se há DISCIPLINA escolhida
  */
 
-if (!isset($_SESSION["DISCIPLINA"])) {
+if (!isset($_SESSION["DISCIPLINA"]) || (isset($_POST["chDisc"]) && $_POST["chDisc"] == "YES")) {
 	include("inc/login_disciplina.php");
 	exit;
 }
@@ -103,7 +103,7 @@ $op_folhas = "
 	<option value='20'>20</option>";
 
 if ($px_dia > $hoje) {
-	$msg = shAlert("Você está em dia com o Kumon.", "primary", false, "return", "mt-2 mb-1");
+	$msg = shAlert("Você está em dia com o Kumon.", "primary", false, true, "mt-2 mb-1");
 
 	echo "
 		<form id='form_lanc' class='form'>
@@ -164,7 +164,9 @@ if (! empty($meta)) {
 	$meta_folha = $meta[0]["folha"];
 	$meta_valor = $meta[0]["valor"];
 
-	$meta_msg = "No dia [<b>{$meta_dia}</b>], eu quero <br>concluir a folha [<b>{$meta_folha}</b>] do estágio [<b>{$estagio_arr[$meta_est]}</b>].";
+	$meta_dia2 = date('d/m/Y', strtotime($meta_dia));
+
+	$meta_msg = "No dia [<b>{$meta_dia2}</b>], eu quero <br>concluir a folha [<b>{$meta_folha}</b>] do estágio [<b>{$estagio_arr[$meta_est]}</b>].";
 }
 else {
 	$meta_dia = $meta_ts = $meta_est =  $meta_folha =  $meta_valor = $serie_meta = null;

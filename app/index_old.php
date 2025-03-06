@@ -50,11 +50,11 @@
 
 				if ($resp != "F5") {
 					if (is_numeric($resp)) {
-						$Msg = shAlert("<b>Parabéns!</b> Você concluiu {$qtde} novas folhas.", "success", true, "return", "mb-1");
+						$Msg = shAlert("<b>Parabéns!</b> Você concluiu {$qtde} novas folhas.", "success", true, true, "mb-1");
 						_log("Adicionou novs folhas ({#$resp} em `t_desempenho`) [Dia = {$dia}; Folhas = {$qtde}]");
 					}
 					else {
-						$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, "return", "mb-1");
+						$Msg = shAlert("<b>ERRO</b>. Não foi possível adicionar novas folhas.", "danger", false, true, "mb-1");
 						_log_sql($resp[0], $resp[1], "Erro na tentativa de adicionar folhas concluídas.");
 					}
 				}
@@ -75,11 +75,11 @@
 
 				if ($resp != "F5") {
 					if (is_numeric($resp)) {
-						$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, "return", "mb-1");
+						$Msg = shAlert("<b>Sucesso!</b> Sua meta foi alterada!.", "success", true, true, "mb-1");
 						_log("atualizou a meta: [Dia = {$meta_dia}; Estágio: {$estagio}; Folhas = {$folha}]");
 					}
 					else {
-						$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, "return", "mb-1");
+						$Msg = shAlert("<b>ERRO</b>. Não foi possível atualizar a meta.", "danger", false, true, "mb-1");
 						_log_sql($resp[0], $resp[1], "Erro na tentativa de atualizar a meta.");
 					}
 				}

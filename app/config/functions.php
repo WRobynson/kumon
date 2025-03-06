@@ -44,12 +44,12 @@ $diaSemana_arr = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb');
  * @param string $msg A mensagem a ser mostrada
  * @param string $tipo Seleciona a cor, de acordo com os padrões do bootstrap
  * @param bool $close Se mostra ou não o botão pra fechar a mensagem
- * @param string $type Se mostra o alerta (null) ou retorna pra uma variável ("return") 
+ * @param bool $return Se mostra o alerta (false) ou retorna pra uma variável (true) 
  * @param string $classes Classes adicionais para a DIV com o alerta 
  * @return string DIV formatada com bootstrap
  */
 
-function shAlert($msg, $tipo = "success", $close = true, $type = null, $classes = "mb-0")
+function shAlert($msg, $tipo = "success", $close = true, $return = false, $classes = "mb-0")
 {
 	if ($close) {
 		$bot = "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Fechar'></button>";
@@ -64,7 +64,7 @@ function shAlert($msg, $tipo = "success", $close = true, $type = null, $classes 
 		{$msg}{$bot}
 		</div>";
 
-	if ($type == null)
+	if ($return === false)
 		echo $output;
 	else
 		return $output;
