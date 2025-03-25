@@ -31,7 +31,7 @@ RUN	echo "ServerTokens Prod" >> /etc/apache2/apache2.conf && \
 RUN	WEB_USER_PWD=$(openssl rand -hex 16) && \
 	useradd -u 1000 ${WEB_USER} && \
 	echo "${WEB_USER}:${WEB_USER_PWD}" | chpasswd && \
-	echo ${WEB_USER_PWD} >> /etc/web_user_pwd && \
+	echo "${WEB_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
 	#echo "${WEB_USER} ALL=(ALL) /bin/chown, /bin/chmod, /usr/sbin/cron" >> /etc/sudoers && \
 	echo "${WEB_USER} ALL=(ALL)" >> /etc/sudoers && \
 	# criação da pasta para as chaves de criptografia
